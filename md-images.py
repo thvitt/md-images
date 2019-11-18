@@ -1,4 +1,26 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+
+"""
+Lists images referenced from one or more given markdown files.
+
+This tool is mainly used for two different purposes:
+
+With -l, it simply lists all images referenced from a markdown file. Use this,
+e.g., to copy only relevant images::
+
+    cp -p `md-images foo.md` ../some/new/folder
+
+With -m, it can write Makefile dependency rules. Use this, e.g., in a Makefile
+snippet as follows::
+
+    Makefile.dep : $(MARKDOWN_FILES)
+        md-images -d '%.pdf' $(MARKDOWN_FILES)
+
+    include Makefile.dep
+
+This will create and maintain and include a dependency file for all given
+markdown files.
+"""
 
 from typing import List, Union
 from urllib.parse import urlparse
@@ -48,7 +70,7 @@ def deppattern(pattern: str, markdown: Path) -> str:
 
 
 def get_argparser():
-    parser = argparse.ArgumentParser(description='Extracts images from markdown files')
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('markdown', nargs='+', help="Markdown files to read", type=Path)
     parser.add_argument('-d', '--suffix', action='append', metavar='suffix', help="""
         Write Makefile dependency rules for the given default suffix. Suffix may be either
