@@ -21,7 +21,7 @@ snippet as follows::
 This will create and maintain and include a dependency file for all given
 markdown files.
 """
-
+import sys
 from typing import List, Union
 from urllib.parse import urlparse
 from os import fspath
@@ -31,8 +31,12 @@ import argparse
 from pathlib import Path
 
 
-def load_markdown(markdown: Path) -> pf.Doc:
-    return pf.convert_text(markdown.read_text(encoding='utf-8'), standalone=True)
+def load_markdown(markdown: Path, format: str = None) -> pf.Doc:
+    if format is None and markdown.suffix[1:] in pf.tools.RAW_FORMATS:
+        format = markdown.suffix[1:]
+    if format is None:
+        format = 'markdown'
+    return pf.convert_text(markdown.read_text(encoding='utf-8'), input_format=format, standalone=True)
 
 
 def find_images(doc: pf.Doc) -> List[pf.Image]:
@@ -66,7 +70,7 @@ def deppattern(pattern: str, markdown: Path) -> str:
     if '%' in pattern:
         return pattern.replace('%', markdown.stem)
     else:
-        return markdown.with_suffix(pattern)
+        return fspath(markdown.with_suffix(pattern))
 
 
 def get_argparser():
@@ -83,6 +87,8 @@ def get_argparser():
     """)
     parser.add_argument('-l', '--list', action='store_true',
                         help="only list the dependent images")
+    parser.add_argument('-f', '--format', nargs=1, help="Format of the source files. Default is to autodetect and fallback to markdown.")
+    parser.add_argument('-k', '--keep-going', action='store_true', help='do not quit on errors')
     return parser
 
 
@@ -93,18 +99,26 @@ def _main():
     rules = []
     imgs = set()
     for markdown in options.markdown:
-        images = image_paths(markdown)
-        imgs.update(images)
-        if options.suffix:
-            for suffix in options.suffix:
-                rules.append(f'{deppattern(suffix, markdown)} : '
-                             f'{markdown} {" ".join(map(fspath, images))}')
-        else:
-            rules.append(f'{markdown} : {" ".join(map(fspath, images))}')
-        if options.individual_dependencies:
-            with markdown.with_suffix(options.individual_dependencies).open('wt') as depfile:
-                depfile.write('\n'.join(rules))
-            rules = []
+        try:
+            images = image_paths(markdown)
+            imgs.update(images)
+            if options.suffix:
+                for suffix in options.suffix:
+                    rules.append(f'{deppattern(suffix, markdown)} : '
+                                 f'{markdown} {" ".join(map(fspath, images))}')
+            else:
+                rules.append(f'{markdown} : {" ".join(map(fspath, images))}')
+            if options.individual_dependencies:
+                with markdown.with_suffix(options.individual_dependencies).open('wt') as depfile:
+                    depfile.write('\n'.join(rules))
+                rules = []
+        except Exception as e:
+            if options.keep_going:
+                msg=f"ERROR analyzing {markdown}: {e}"
+                rules.append('# ' + msg)
+                print(msg, file=sys.stderr)
+            else:
+                raise
 
     if options.list:
         print("\n".join(map(str, imgs)))
