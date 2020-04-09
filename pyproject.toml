@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "md-images"
+version = "0.2.0"
+description = "List images linked in a markdown file"
+authors = ["Thorsten Vitt <thorsten.vitt@uni-wuerzburg.de>"]
+include = [{name = "md_images.py"}]
+
+[tool.poetry.scripts]
+md-images = "md_images:_main"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+panflute = "^1.12.5"
+
+[tool.poetry.dev-dependencies]
+
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
