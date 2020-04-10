@@ -1,25 +1,8 @@
 #!/usr/bin/python3
 
 """
-Lists images referenced from one or more given markdown files.
-
-This tool is mainly used for two different purposes:
-
-With -l, it simply lists all images referenced from a markdown file. Use this,
-e.g., to copy only relevant images::
-
-    cp -p `md-images foo.md` ../some/new/folder
-
-With -m, it can write Makefile dependency rules. Use this, e.g., in a Makefile
-snippet as follows::
-
-    Makefile.dep : $(MARKDOWN_FILES)
-        md-images -d '%.pdf' $(MARKDOWN_FILES)
-
-    include Makefile.dep
-
-This will create and maintain and include a dependency file for all given
-markdown files.
+Lists images referenced from one or more given markdown files,
+optionally as makefile dependencies (-d) or as simple list (-l).
 """
 import sys
 from typing import List, Union
