@@ -5,7 +5,7 @@ Lists images referenced from one or more given markdown files,
 optionally as makefile dependencies (-d) or as simple list (-l).
 """
 import sys
-from typing import List, Union
+from typing import List, Union, Type
 from urllib.parse import urlparse
 from os import fspath
 
@@ -14,26 +14,40 @@ import argparse
 from pathlib import Path
 
 
-def load_markdown(markdown: Path, format: str = None) -> pf.Doc:
-    if format is None and markdown.suffix[1:] in pf.tools.RAW_FORMATS:
-        format = markdown.suffix[1:]
-    if format is None:
-        format = 'markdown'
-    return pf.convert_text(markdown.read_text(encoding='utf-8'), input_format=format, standalone=True)
+def load_markdown(markdown: Path, input_format: str = None) -> pf.Doc:
+    if input_format is None and markdown.suffix[1:] in pf.tools.RAW_FORMATS:
+        input_format = markdown.suffix[1:]
+    if input_format is None:
+        input_format = 'markdown'
+    return pf.convert_text(markdown.read_text(encoding='utf-8'), input_format=input_format, standalone=True)
+
+
+def find_all(doc: pf.Doc, cls: Type[pf.Element]) -> List[pf.Element]:
+    result = []
+
+    def collect(elem: pf.Element, _):
+        if isinstance(elem, cls):
+            result.append(elem)
+
+    doc.walk(collect)
+    return result
 
 
 def find_images(doc: pf.Doc) -> List[pf.Image]:
-    images = []
-
-    def add_image(elem, doc):
-        if isinstance(elem, pf.Image):
-            images.append(elem)
-
-    doc.walk(add_image)
-    return images
+    return find_all(doc, pf.Image)
 
 
 def resolve_url(url: str, markdown: Path) -> Union[Path, str]:
+    """
+    Resolves an URL that has been found in the given source file.
+
+    Args:
+        url: the url to resolve
+        markdown: source file, as a reference
+
+    Returns:
+        Path to the file, or the original str if it is an URL with a scheme:
+    """
     parsed_url = urlparse(url)
     if parsed_url.scheme:  # absolute URI with scheme
         return url
@@ -43,18 +57,31 @@ def resolve_url(url: str, markdown: Path) -> Union[Path, str]:
         return Path(markdown.parent, url)
 
 
-def image_paths(markdown: Path) -> List[Union[Path, str]]:
+def image_paths(markdown: Path, include_urls: bool = False) -> List[Union[Path, str]]:
+    """Returns all image paths of the given markdown file, resolved to the markdown file"""
     doc = load_markdown(markdown)
     images = find_images(doc)
-    return [resolve_url(image.url, markdown) for image in images]
+    refs = [resolve_url(image.url, markdown) for image in images]
+    return [ref for ref in refs if include_urls or isinstance(ref, Path)]
 
 
-def deppattern(pattern: str, markdown: Path) -> str:
+def deppattern(pattern: str, markdown: Path) -> Union[str, Path]:
     if '%' in pattern:
         return pattern.replace('%', markdown.stem)
     else:
-        return fspath(markdown.with_suffix(pattern))
+        return markdown.with_suffix(pattern)
 
+def list_urls(doc: pf.Doc, output_format='markdown') -> str:
+    links = find_all(doc, pf.Link)
+    if output_format == 'url':
+        return "\n".join(link.url for link in links)
+    elif output_format == 'tabbed':
+        return "\n".join(link.url + '\t' + pf.stringify(link) for link in links)
+    else:
+        items = [pf.ListItem(pf.Plain(link)) for link in links]
+        bullet_list = pf.BulletList()
+        bullet_list.content.extend(items)
+        return pf.convert_text(bullet_list, input_format='panflute', output_format=output_format)
 
 def get_argparser():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -70,7 +97,14 @@ def get_argparser():
     """)
     parser.add_argument('-l', '--list', action='store_true',
                         help="only list the dependent images")
-    parser.add_argument('-f', '--format', nargs=1, help="Format of the source files. Default is to autodetect and fallback to markdown.")
+    parser.add_argument('-u', '--urls', nargs='?', metavar='url_format', const='tabbed',
+                        help="Extract all links. The optional format is the output format,"
+                             "legal values include tabbed (url + tab + text, the default),"
+                             "url (only the url), and supported pandoc output formats.")
+#    parser.add_argument('-c', '--copy', nargs=1, metavar='target', type=Path,
+#                        help="copy markdown and images to the given target directory")
+    parser.add_argument('-f', '--format', nargs=1,
+                        help="Format of the source files. Default is to autodetect and fallback to markdown.")
     parser.add_argument('-k', '--keep-going', action='store_true', help='do not quit on errors')
     return parser
 
@@ -83,6 +117,11 @@ def _main():
     imgs = set()
     for markdown in options.markdown:
         try:
+            if options.urls:
+                doc = load_markdown(markdown, options.format)
+                print(list_urls(doc, options.urls))
+                continue
+
             images = image_paths(markdown)
             imgs.update(images)
             if options.suffix:
@@ -97,7 +136,7 @@ def _main():
                 rules = []
         except Exception as e:
             if options.keep_going:
-                msg=f"ERROR analyzing {markdown}: {e}"
+                msg = f"ERROR analyzing {markdown}: {e}"
                 rules.append('# ' + msg)
                 print(msg, file=sys.stderr)
             else:
