@@ -3,7 +3,9 @@ name = "md-images"
 version = "0.2.0"
 description = "List images linked in a markdown file"
 authors = ["Thorsten Vitt <thorsten.vitt@uni-wuerzburg.de>"]
-include = [{name = "md_images.py"}]
+
+packages = [
+   { include = "md_images.py"}]
 
 [tool.poetry.scripts]
 md-images = "md_images:_main"
