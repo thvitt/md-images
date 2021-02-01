@@ -12,7 +12,7 @@ md-images = "md_images:_main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-panflute = "^1.12.5"
+panflute = "^2.0.5"
 
 [tool.poetry.dev-dependencies]
 
