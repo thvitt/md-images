@@ -5,7 +5,7 @@ Lists images referenced from one or more given markdown files,
 optionally as makefile dependencies (-d) or as simple list (-l).
 """
 import sys
-from typing import List, Union, Type
+from typing import List, TypeVar, Union, Type, Iterable
 from urllib.parse import urlparse
 from os import fspath
 
@@ -22,7 +22,9 @@ def load_markdown(markdown: Path, input_format: str = None) -> pf.Doc:
     return pf.convert_text(markdown.read_text(encoding='utf-8'), input_format=input_format, standalone=True)
 
 
-def find_all(doc: pf.Doc, cls: Type[pf.Element]) -> List[pf.Element]:
+T = TypeVar('T', pf.Element, pf.Image)
+
+def find_all(doc: pf.Doc, cls: Type[T]) -> List[T]:
     result = []
 
     def collect(elem: pf.Element, _):
@@ -33,8 +35,19 @@ def find_all(doc: pf.Doc, cls: Type[pf.Element]) -> List[pf.Element]:
     return result
 
 
-def find_images(doc: pf.Doc) -> List[pf.Image]:
-    return find_all(doc, pf.Image)
+def _is_generated_image(img: pf.Image) -> bool:
+    try:
+        classes = img.parent.parent.classes
+        return 'output' in classes
+    except AttributeError:
+        return False
+
+
+def find_images(doc: pf.Doc, filter_outputs=True) -> List[pf.Image]:
+    result = find_all(doc, pf.Image)
+    if filter_outputs:
+        result = [img for img in result if not _is_generated_image(img)]
+    return result
 
 
 def resolve_url(url: str, markdown: Path) -> Union[Path, str]:

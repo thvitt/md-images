@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "md-images"
-version = "0.2.0"
+version = "0.3.0"
 description = "List images linked in a markdown file"
 authors = ["Thorsten Vitt <thorsten.vitt@uni-wuerzburg.de>"]
 
