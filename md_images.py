@@ -175,7 +175,21 @@ def get_argparser():
     parser.add_argument(
         "-k", "--keep-going", action="store_true", help="do not quit on errors"
     )
+    parser.add_argument(
+        "-V",
+        "--variants",
+        action="store_true",
+        help="Add variants with different suffix if they exist",
+    )
     return parser
+
+
+def add_variants(images: Iterable[Path]) -> list[Path]:
+    result = []
+    for orig in images:
+        result.append(orig)
+        result.extend(orig.parent.glob(orig.stem + ".*"))
+    return result
 
 
 def _main():
@@ -193,6 +207,9 @@ def _main():
 
             images = image_paths(markdown)
             imgs.update(images)
+            if options.variants:
+                imgs.update(add_variants(imgs))
+
             if options.suffix:
                 for suffix in options.suffix:
                     rules.append(
