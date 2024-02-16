@@ -112,8 +112,18 @@ def deppattern(pattern: str, markdown: Path) -> Union[str, Path]:
         return markdown.with_suffix(pattern)
 
 
+def unique(items: Iterable[T]) -> list[T]:
+    result = []
+    seen = set()
+    for item in items:
+        if repr(item) not in seen:
+            result.append(item)
+            seen.add(repr(item))
+    return result
+
+
 def list_urls(doc: pf.Doc, output_format="markdown") -> str:
-    links = find_all(doc, pf.Link)
+    links = unique(find_all(doc, pf.Link))
     if output_format == "url":
         return "\n".join(link.url for link in links)
     elif output_format == "tabbed":

@@ -1,9 +1,9 @@
 [project]
 name = "md-images"
-version = "0.3.0"
+version = "0.4.0"
 description = "List images linked in a markdown file"
 authors = [
-    {name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de"},
+    { name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de" },
 ]
 requires-python = ">=3.8,<4.0"
 dependencies = [
@@ -13,7 +13,6 @@ dependencies = [
 [project.scripts]
 md-images = "md_images:_main"
 
-[tool.pdm]
 [tool.pdm.dev-dependencies]
 dev = [
     "pytest<7.0.0,>=6.2.3",
@@ -25,5 +24,7 @@ includes = [
 ]
 
 [build-system]
-requires = ["pdm-backend"]
+requires = [
+    "pdm-backend",
+]
 build-backend = "pdm.backend"
