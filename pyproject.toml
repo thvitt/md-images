@@ -13,6 +13,10 @@ prefer-variants = "prefer_variants:app"
 [tool.pdm.build]
 includes = ["md_images.py", "prefer_variants.py"]
 
+[tool.pdm.dev-dependencies]
+dev = [
+    "pytest>=8.3.3",
+]
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"

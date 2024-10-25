@@ -4,7 +4,6 @@
 Lists images referenced from one or more given markdown files,
 optionally as makefile dependencies (-d) or as simple list (-l).
 """
-from subprocess import check_call
 import sys
 from typing import List, TypeVar, Union, Type, Iterable
 from urllib.parse import urlparse
@@ -16,7 +15,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
-def load_markdown(markdown: Path, input_format: str = None) -> pf.Doc:
+def load_markdown(markdown: Path, input_format: str | None = None) -> pf.Doc:
     if input_format is None and markdown.suffix[1:] in pf.tools.RAW_FORMATS:
         input_format = markdown.suffix[1:]
     if input_format is None:
