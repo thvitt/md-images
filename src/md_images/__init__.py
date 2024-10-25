@@ -1,1 +1,1 @@
-from .md_images import *
+from .core import *
