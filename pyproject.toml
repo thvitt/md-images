@@ -7,16 +7,11 @@ requires-python = ">=3.9,<4.0"
 dependencies = ["panflute<3.0.0,>=2.0.5", "cyclopts>=2.9.9"]
 
 [project.scripts]
-md-images = "md_images:_main"
-prefer-variants = "prefer_variants:app"
-
-[tool.pdm.build]
-includes = ["md_images.py", "prefer_variants.py"]
+md-images = "md_images.md_images:_main"
+prefer-variants = "md_images.prefer_variants:app"
 
 [tool.pdm.dev-dependencies]
-dev = [
-    "pytest>=8.3.3",
-]
+dev = ["pytest>=8.3.3"]
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
