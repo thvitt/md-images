@@ -1,15 +1,9 @@
 from pathlib import Path
-
-import panflute as pf
-import pytest
+from os import fspath
 
 import md_images as mdi
-from posix import fspath
-
-
-@pytest.fixture
-def mdfile():
-    return Path(__file__).parent / "test.md"
+import panflute as pf
+import pytest
 
 
 @pytest.fixture
@@ -44,3 +38,8 @@ def test_image_paths(mdfile):
     paths = mdi.image_paths(mdfile)
     fspaths = [fspath(p.relative_to(mdfile.parent.absolute())) for p in paths]
     assert fspaths == ["example.png"]
+
+
+def test_relfspath(mdfile):
+    space_test = mdfile.with_name("a name with a space.png")
+    assert "'a name with a space.png'" == mdi.relative_fspath(space_test, mdfile.parent)

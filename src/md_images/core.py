@@ -1,3 +1,4 @@
+import shlex
 from os import fspath
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -134,3 +135,12 @@ def add_variants(images: Iterable[Path]) -> list[Path]:
         result.append(orig)
         result.extend(orig.parent.glob(orig.stem + ".*"))
     return result
+
+
+def relative_fspath(path: Path, base: Path = Path()) -> str:
+    try:
+        base_ = base.resolve()
+        path_ = path.resolve().relative_to(base_)
+    except ValueError:
+        path_ = path
+    return shlex.quote(fspath(path_))

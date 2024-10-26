@@ -1,7 +1,8 @@
+from collections.abc import Iterable
 from posix import fspath
 from collections import defaultdict
 from pathlib import Path
-from typing import Literal
+from typing import Callable, Literal
 import cyclopts
 from shlex import join, quote
 
@@ -22,6 +23,39 @@ class SuffixRanks:
         return self.ranks.get(file.suffix, len(self.ranks) + 1)
 
 
+def rank_variants(
+    files: Iterable[Path],
+    find_variants: bool = False,
+    ranker: Callable[[Path], int] | None = None,
+) -> dict[Path, list[Path]]:
+    """
+    Group the given list of files by base name and rank the variants by suffix.
+
+    Args:
+        files: List of files to consider.
+        find_variants: If true, look for all files on disk matching foo.*, not only those listed.
+        ranker: A function that assigns a rank to a file.
+
+    Returns:
+        A dictionary mapping base names to a list of files, sorted by rank.
+    """
+    if ranker is None:
+        ranker = SuffixRanks()
+    variant_map = defaultdict(set)
+    for file in files:
+        base = file.with_suffix("")
+        variant_map[base].add(file)
+
+    if find_variants:
+        for base, variants in variant_map.items():
+            variants.update(base.parent.glob(base.stem + ".*"))
+
+    ranked_variants = {
+        base: sorted(variants, key=ranker) for base, variants in variant_map.items()
+    }
+    return ranked_variants
+
+
 @app.default
 def adjust_list(
     files: list[Path],
@@ -38,19 +72,7 @@ def adjust_list(
         output: How to print the result. "original" prints the preferred file, "generated" prints all other files, "rules" prints a makefile rule.
         include_single: Include files that have no variants.
     """
-    variant_map = defaultdict(set)
-    for file in files:
-        base = file.with_suffix("")
-        variant_map[base].add(file)
-
-    if find_variants:
-        for base, variants in variant_map.items():
-            variants.add(base.parent.glob(base.stem + ".*"))
-
-    ranker = SuffixRanks()
-    ranked_variants = {
-        base: sorted(variants, key=ranker) for base, variants in variant_map.items()
-    }
+    ranked_variants = rank_variants(files, find_variants)
 
     for variants in ranked_variants.values():
         if len(variants) == 1 and not include_single:
