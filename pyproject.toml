@@ -1,14 +1,14 @@
 [project]
 name = "md-images"
-version = "0.5.0"
+version = "0.6.0"
 description = "List images linked in a markdown file"
 authors = [{ name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de" }]
 requires-python = ">=3.9,<4.0"
 dependencies = ["panflute<3.0.0,>=2.0.5", "cyclopts>=3.0.0,<4.0.0"]
 
 [project.scripts]
-md-images = "md_images.oldcli:_main"
-md-images-new = "md_images.cli:app"
+md-images-old = "md_images.oldcli:_main"
+md-images = "md_images.cli:app"
 prefer-variants = "md_images.prefer_variants:app"
 
 [tool.pdm.dev-dependencies]
