@@ -1,3 +1,4 @@
+import builtins
 from pathlib import Path
 from typing import Annotated, Literal
 from panflute import (
@@ -12,7 +13,7 @@ from panflute import (
     convert_text,
     stringify,
 )
-from rich import print
+from rich.console import Console
 from rich.syntax import Syntax
 
 from cyclopts import App, Parameter
@@ -23,6 +24,16 @@ from .model import MdFile, SourceSelection
 from .core import find_all
 
 import logging
+
+console = Console()
+
+
+def print(*args, **kwargs):
+    if console.is_terminal:
+        console.print(*args, **kwargs)
+    else:
+        builtins.print(*args, **kwargs)
+
 
 logger = logging.getLogger(__name__)
 
