@@ -81,9 +81,15 @@ class MdFile:
 
         target_dir.mkdir(parents=True, exist_ok=True)
         copy2(self.path, doc_target)
-        logger.info("Copied text file %s to %s", self.path, doc_target)
-        for img in self.image_sources(selection):
+        images = self.image_sources(selection)
+        logger.info(
+            "Copied text file %s to %s, %d images will follow",
+            self.path,
+            doc_target,
+            len(images),
+        )
+        for img in images:
             dest = target_dir / img.relative_to(self.path.parent)
             dest.parent.mkdir(parents=True, exist_ok=True)
             copy2(img, dest)
-            logger.info("%s: Copied image file %s to %s", self.path, img, dest)
+            logger.debug("   %s: copied image file %s to %s", self.path, img, dest)
