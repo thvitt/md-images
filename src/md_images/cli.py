@@ -15,6 +15,7 @@ from panflute import (
 )
 from rich.console import Console
 from rich.syntax import Syntax
+from rich.logging import RichHandler
 
 from cyclopts import App, Parameter
 
@@ -36,6 +37,9 @@ def print(*args, **kwargs):
 
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(
+    format="%(message)s", handlers=[RichHandler(show_time=False)], level=logging.INFO
+)
 
 app = App(default_parameter=Parameter(negative=[]), help_format="rst")
 
