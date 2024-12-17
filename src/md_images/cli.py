@@ -208,7 +208,7 @@ def md_images(
     all_dependencies = set()
     for source_file in markdown:
         source = MdFile(source_file)
-        if list:
+        if list_:
             all_dependencies.update(source.image_paths)
         else:
             rules = "\n".join(
