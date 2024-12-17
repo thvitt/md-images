@@ -143,4 +143,4 @@ def relative_fspath(path: Path, base: Path = Path()) -> str:
         path_ = path.resolve().relative_to(base_)
     except ValueError:
         path_ = path
-    return shlex.quote(fspath(path_))
+    return fspath(path_)

@@ -219,4 +219,7 @@ def md_images(
                     rules + "\n"
                 )
             else:
-                print(rules)
+                if console.is_terminal:
+                    console.print(Syntax(rules, "Makefile", word_wrap=True))
+                else:
+                    print(rules)
