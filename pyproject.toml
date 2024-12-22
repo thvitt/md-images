@@ -1,24 +1,32 @@
 [project]
 name = "md-images"
 version = "0.7.0"
-description = "List images linked in a markdown file"
+description = "Manage images linked in a markdown file"
 authors = [{ name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de" }]
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
 dependencies = ["panflute<3.0.0,>=2.0.5", "cyclopts>=3.0.0,<4.0.0"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Text Processing :: Filters",
+  "Topic :: Text Processing :: Markup :: Markdown",
+]
 
 [project.scripts]
 md-images-old = "md_images.oldcli:_main"
 md-images = "md_images.cli:app"
 prefer-variants = "md_images.prefer_variants:app"
 
+[project.urls]
+Homepage = "https://github.com/thorsten-vitt/md-images"
+Repository = "https://github.com/thorsten-vitt/md-images"
+Issues = "https://github.com/thorsten-vitt/md-images/issues"
+
 [tool.pdm.dev-dependencies]
-dev = ["pytest>=8.3.3"]
+dev = ["pytest>=8.3.3", "coverage>=7.6.9"]
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
-
-[dependency-groups]
-dev = [
-    "coverage>=7.6.9",
-]
