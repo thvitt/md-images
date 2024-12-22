@@ -1,4 +1,5 @@
 import builtins
+from os import fspath
 from pathlib import Path
 from typing import Annotated, Literal
 from panflute import (
@@ -136,6 +137,63 @@ def cp(
         else:
             dest = target
         source.copy(dest, select)
+
+
+@app.command
+def check(
+    texts: Texts,
+    /,
+    *,
+    select: Select = SourceSelection.EXPLICIT,
+    quiet: Annotated[bool, Parameter(["-q", "--quiet"])] = False,
+    verbose: Annotated[bool, Parameter(["-v", "--verbose"])] = False,
+):
+    """
+    Checks if all images in the given text files exist.
+
+    Args:
+        quiet: only list missing files, nothing more
+        verbose: also print potential alternatives for missing images
+    """
+    total_present, total_missing = [], []
+    for text in texts:
+        source = MdFile(text)
+        images = source.image_sources(select)
+        present, missing = [], []
+        for image in images:
+            if image.exists():
+                present.append(image)
+            else:
+                missing.append(image)
+        if missing:
+            if verbose:
+                print(f"{source}: {len(missing)} missing images:")
+                for img in missing:
+                    alternatives = [
+                        str(alt) for alt in img.parent.glob(img.stem + ".*")
+                    ]
+                    msg = f" - {img}"
+                    if alternatives:
+                        msg += f' (existing variants: {" ".join(alternatives)})'
+                    print(msg)
+            elif quiet:
+                print("\n".join(map(fspath, missing)))
+            else:
+                print(
+                    f'{source.path}: {len(missing)} missing images: {" ".join(map(str, missing))}'
+                )
+        total_present.extend(present)
+        total_missing.extend(missing)
+    if total_missing:
+        if not quiet:
+            logger.error(
+                "%d images missing, %d present", len(total_missing), len(total_present)
+            )
+        return 1
+    else:
+        if not quiet:
+            logger.info("All %d images present", len(total_present))
+        return 0
 
 
 @app.command

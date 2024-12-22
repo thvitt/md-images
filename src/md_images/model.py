@@ -2,6 +2,8 @@ from enum import Enum
 from functools import cached_property
 from pathlib import Path
 
+from panflute import stringify
+
 from .core import find_images, load_markdown, relative_fspath, resolve_url
 from .prefer_variants import rank_variants
 from typing import Callable
@@ -30,6 +32,15 @@ class MdFile:
     def __init__(self, mdfile: str | Path) -> None:
         self.path = Path(mdfile)
         self.doc = load_markdown(self.path)
+
+    def __str__(self) -> str:
+        result = str(self.path)
+        try:
+            title = stringify(self.doc.metadata["title"])
+            result += f" ({title})"
+        except Exception:
+            pass
+        return result
 
     @cached_property
     def image_urls(self) -> set[str]:
