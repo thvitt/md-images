@@ -1,8 +1,9 @@
 [project]
 name = "md-images"
-version = "0.6.0"
+version = "0.7.0"
 description = "List images linked in a markdown file"
 authors = [{ name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de" }]
+readme = "README.md"
 requires-python = ">=3.9,<4.0"
 dependencies = ["panflute<3.0.0,>=2.0.5", "cyclopts>=3.0.0,<4.0.0"]
 
