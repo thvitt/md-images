@@ -1,29 +1,19 @@
 [project]
 name = "md-images"
-version = "0.3.0"
+version = "0.7.0"
 description = "List images linked in a markdown file"
-authors = [
-    {name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de"},
-]
-requires-python = ">=3.8,<4.0"
-dependencies = [
-    "panflute<3.0.0,>=2.0.5",
-]
+authors = [{ name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de" }]
+readme = "README.md"
+requires-python = ">=3.9,<4.0"
+dependencies = ["panflute<3.0.0,>=2.0.5", "cyclopts>=3.0.0,<4.0.0"]
 
 [project.scripts]
-md-images = "md_images:_main"
+md-images-old = "md_images.oldcli:_main"
+md-images = "md_images.cli:app"
+prefer-variants = "md_images.prefer_variants:app"
 
-[tool.pdm]
 [tool.pdm.dev-dependencies]
-dev = [
-    "pytest<7.0.0,>=6.2.3",
-]
-
-[tool.pdm.build]
-includes = [
-    "md_images.py",
-]
-
+dev = ["pytest>=8.3.3"]
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
