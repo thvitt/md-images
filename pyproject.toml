@@ -17,3 +17,8 @@ dev = ["pytest>=8.3.3"]
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
+
+[dependency-groups]
+dev = [
+    "coverage>=7.6.9",
+]

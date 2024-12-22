@@ -7,4 +7,5 @@ title: Test file
 This is a test file with a [link](https://example.com).
 
 ![Image](example.png)
+
 ```

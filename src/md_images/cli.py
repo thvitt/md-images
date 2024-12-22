@@ -264,6 +264,7 @@ def md_images(
 
     """
     all_dependencies = set()
+    all_rules = []
     for source_file in markdown:
         source = MdFile(source_file)
         if list_:
@@ -276,8 +277,9 @@ def md_images(
                 source_file.with_suffix(individual_dependencies).write_text(
                     rules + "\n"
                 )
-            else:
-                if console.is_terminal:
-                    console.print(Syntax(rules, "Makefile", word_wrap=True))
-                else:
-                    print(rules)
+            all_rules.append(rules)
+    if not individual_dependencies:
+        if list_:
+            print("\n".join(map(str, all_dependencies)))
+        else:
+            print("\n".join(all_rules))

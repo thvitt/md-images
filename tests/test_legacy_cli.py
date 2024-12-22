@@ -11,7 +11,7 @@ def run(cmdline: str):
 def test_mdimages_help():
     result = run("md-images --help")
     assert result.returncode == 0
-    assert result.stdout.startswith("usage: md-images")
+    assert result.stdout.startswith("Usage: md-images")
 
 
 def test_list_images():

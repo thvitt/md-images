@@ -42,4 +42,4 @@ def test_image_paths(mdfile):
 
 def test_relfspath(mdfile):
     space_test = mdfile.with_name("a name with a space.png")
-    assert "'a name with a space.png'" == mdi.relative_fspath(space_test, mdfile.parent)
+    assert mdi.relative_fspath(space_test, mdfile.parent) == "a name with a space.png"
