@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from datetime import datetime
 from io import StringIO
 from pathlib import Path
@@ -17,6 +17,11 @@ from .model import MdFile
 import panflute as pf
 
 from cyclopts import App
+
+import logging
+from . import cli  # noqa : initializes logging
+
+logger = logging.getLogger(__name__)
 
 app = App()
 
@@ -45,7 +50,8 @@ class NameField(Field):
     def key(self, value: MdFile) -> Any:
         parts = re.findall(r"\d+|\D+", value.path.name)
         return tuple(
-            (int(part) if part.isdigit() else part.casefold()) for part in parts
+            (format(int(part), "09d") if part.isdigit() else part.casefold())
+            for part in parts
         )
 
 
@@ -103,12 +109,23 @@ class Ls:
 
         assert files is not None
 
-        docs = [
-            MdFile(file) if not isinstance(file, MdFile) else file
-            for file in track(files, "Loading files...", transient=True)
-        ]
+        docs = self.load_files(files)
         self.docs = sorted(docs, key=order.key, reverse=reverse)
         self.columns = columns
+
+    @staticmethod
+    def load_files(files: Iterable[Path | MdFile | str]) -> list[MdFile]:
+        result = []
+        for file in track(files, "Loading files...", transient=True):
+            try:
+                if isinstance(file, MdFile):
+                    md_file = file
+                else:
+                    md_file = MdFile(file)
+                result.append(md_file)
+            except Exception as e:
+                logger.error(f"Error loading {file}: {e}")
+        return result
 
     def __rich__(self) -> Table:
         table = Table(show_header=True, box=box.SIMPLE)
