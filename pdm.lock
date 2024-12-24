@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:a2fcc1c52c7e955715b87f18be98b7f8d257a79e8127b11686dc34f9abf14b16"
+content_hash = "sha256:03de3c130bdfff65e1482c9b57c7e8fe73094d4939d9c531cf42e3c5af57fc12"
 
 [[metadata.targets]]
 requires_python = "~=3.9"
@@ -174,6 +174,17 @@ marker = "python_version < \"3.11\""
 files = [
     {file = "exceptiongroup-1.2.2-py3-none-any.whl", hash = "sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b"},
     {file = "exceptiongroup-1.2.2.tar.gz", hash = "sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc"},
+]
+
+[[package]]
+name = "humanize"
+version = "4.11.0"
+requires_python = ">=3.9"
+summary = "Python humanize utilities"
+groups = ["default"]
+files = [
+    {file = "humanize-4.11.0-py3-none-any.whl", hash = "sha256:b53caaec8532bcb2fff70c8826f904c35943f8cecaca29d272d9df38092736c0"},
+    {file = "humanize-4.11.0.tar.gz", hash = "sha256:e66f36020a2d5a974c504bd2555cf770621dbdbb6d82f94a6857c0b1ea2608be"},
 ]
 
 [[package]]

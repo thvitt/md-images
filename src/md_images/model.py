@@ -3,6 +3,7 @@ from functools import cached_property
 from pathlib import Path
 
 from panflute import stringify
+import panflute as pf
 
 from .core import find_images, load_markdown, relative_fspath, resolve_url
 from .prefer_variants import rank_variants
@@ -29,18 +30,27 @@ class SourceSelection(Enum):
 
 class MdFile:
 
+    path: Path
+    doc: pf.Doc
+
     def __init__(self, mdfile: str | Path) -> None:
         self.path = Path(mdfile)
         self.doc = load_markdown(self.path)
 
     def __str__(self) -> str:
         result = str(self.path)
-        try:
-            title = stringify(self.doc.metadata["title"])
-            result += f" ({title})"
-        except Exception:
-            pass
+        if self.title:
+            result += f" ({self.title})"
         return result
+
+    @cached_property
+    def title(self) -> str:
+        try:
+            title = self.doc.metadata["title"]
+        except Exception:
+            headings = [el for el in self.doc.content if isinstance(el, pf.Header)]
+            title = min(headings, key=lambda h: h.level) if headings else ""
+        return title if isinstance(title, str) else pf.stringify(title)
 
     @cached_property
     def image_urls(self) -> set[str]:
