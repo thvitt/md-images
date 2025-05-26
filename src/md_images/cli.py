@@ -70,7 +70,7 @@ def ls(texts: Texts, /, *, select: Select = SourceSelection.EXPLICIT):
 
 @app.command
 def dep(
-    texts: Texts,
+    texts: Texts | None = None,
     /,
     *,
     suffix: Annotated[
@@ -94,7 +94,7 @@ def dep(
         suffix: suffix for the target rules in the makefile. If you provide multiple suffixes separated by space, a rule will be created for each suffix. You can also provide a pattern using '%'
         individual_dependencies: if provided, write an individual dependenca file with the given suffix for each source file
     """
-    for text in texts:
+    for text in texts or []:
         source = MdFile(text)
         rules = "\n".join([source.rule(suf) for suf in suffix or []] or [source.rule()])
         if individual_dependencies:
@@ -174,13 +174,13 @@ def check(
                     ]
                     msg = f" - {img}"
                     if alternatives:
-                        msg += f' (existing variants: {" ".join(alternatives)})'
+                        msg += f" (existing variants: {' '.join(alternatives)})"
                     print(msg)
             elif quiet:
                 print("\n".join(map(fspath, missing)))
             else:
                 print(
-                    f'{source.path}: {len(missing)} missing images: {" ".join(map(str, missing))}'
+                    f"{source.path}: {len(missing)} missing images: {' '.join(map(str, missing))}"
                 )
         total_present.extend(present)
         total_missing.extend(missing)
@@ -244,7 +244,7 @@ def links(
 
 @app.default
 def md_images(
-    markdown: list[Path],
+    markdown: list[Path] | None = None,
     /,
     *,
     list_: Annotated[bool, Parameter(["-l", "--list"], negative=[])] = False,
@@ -265,7 +265,7 @@ def md_images(
     """
     all_dependencies = set()
     all_rules = []
-    for source_file in markdown:
+    for source_file in markdown or []:
         source = MdFile(source_file)
         if list_:
             all_dependencies.update(source.image_paths)
