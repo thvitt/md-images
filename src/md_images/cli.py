@@ -1,8 +1,12 @@
 from __future__ import annotations
+from operator import attrgetter
+from typing import Callable, TypeVar
+from ast import Call
+from typing import Hashable
 import logging
 from os import fspath
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Iterable, Literal
 
 from cyclopts import App, Parameter
 from panflute import (
@@ -187,6 +191,20 @@ def check(
         return 0
 
 
+T = TypeVar("T")
+
+
+def make_unique(
+    iterable: Iterable[T], key: Callable[[T], Hashable] = lambda t: t
+) -> Iterable[T]:
+    seen = set()
+    for item in iterable:
+        item_key = key(item)
+        if item_key not in seen:
+            seen.add(item_key)
+            yield item
+
+
 @app.command
 def links(
     texts: Texts,
@@ -194,6 +212,7 @@ def links(
     format: Annotated[  # noqa: A002
         Literal["tabbed", "url"] | str, Parameter(["-f", "--format"])  # noqa: PYI051
     ] = "tabbed",
+    unique: Annotated[bool, Parameter(alias="-u")] = False,
 ):
     """
     List all links in the given text file.
@@ -203,12 +222,15 @@ def links(
                 of source, URL and title, "url" generates a list of URLs only.
                 Additionally, you can pass any format pandoc is able to
                 generate.
+        unique: if set, only unique links are printed per text
     """
     result = []
     for text in texts:
         doc = MdFile(text).doc
         title = doc.get_metadata("title") or text.stem
-        links: list[Link] = find_all(doc, Link)  # type: ignore
+        links = find_all(doc, Link)  # type: ignore
+        if unique:
+            links = make_unique(links, key=attrgetter("url"))
         if format == "url":
             result.extend(link.url for link in links)
         elif format == "tabbed":
