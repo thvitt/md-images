@@ -4,11 +4,11 @@ version = "0.8.0"
 description = "Manage images linked in a markdown file"
 authors = [{ name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de" }]
 readme = "README.md"
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.9"
 dependencies = [
-  "panflute<3.0.0,>=2.0.5",
-  "cyclopts>=3.0.0,<4.0.0",
-  "humanize>=4.11.0",
+    "panflute>=2.0.5,<3.0.0",
+    "cyclopts>=3.0.0,<4.0.0",
+    "humanize>=4.11.0",
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -29,9 +29,13 @@ Homepage = "https://github.com/thorsten-vitt/md-images"
 Repository = "https://github.com/thorsten-vitt/md-images"
 Issues = "https://github.com/thorsten-vitt/md-images/issues"
 
-[tool.pdm.dev-dependencies]
-dev = ["pytest>=8.3.3", "coverage>=7.6.9"]
+[dependency-groups]
+dev = [
+    "coverage>=7.6.9",
+    "pytest>=8.3.3",
+]
+
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
