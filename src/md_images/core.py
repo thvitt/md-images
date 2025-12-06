@@ -1,7 +1,9 @@
+from __future__ import annotations
 from os import fspath
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Iterable, List, Sequence, Type, TypeVar, Union, cast
+from typing import TypeVar, cast
+from collections.abc import Iterable, Sequence
 from urllib.parse import urlparse
 
 import panflute as pf
@@ -47,7 +49,7 @@ def _load_notebook(notebook: Path) -> pf.Doc:
 T = TypeVar("T", bound=pf.Element)
 
 
-def find_all(doc: pf.Doc, cls: Type[T]) -> list[T]:
+def find_all(doc: pf.Doc, cls: type[T]) -> list[T]:
     result = []
 
     def collect(elem: pf.Element, _):
@@ -73,7 +75,7 @@ def find_images(doc: pf.Doc, filter_outputs=True) -> Sequence[pf.Image]:
     return result
 
 
-def resolve_url(url: str, markdown: Path) -> Union[Path, str]:
+def resolve_url(url: str, markdown: Path) -> Path | str:
     """
     Resolves an URL that has been found in the given source file.
 
@@ -93,7 +95,7 @@ def resolve_url(url: str, markdown: Path) -> Union[Path, str]:
         return Path(markdown.parent, url)
 
 
-def image_paths(markdown: Path, include_urls: bool = False) -> List[Union[Path, str]]:
+def image_paths(markdown: Path, include_urls: bool = False) -> list[Path | str]:
     """Returns all image paths of the given markdown file, resolved to the markdown file"""
     doc = load_markdown(markdown)
     images = find_images(doc)
@@ -101,7 +103,7 @@ def image_paths(markdown: Path, include_urls: bool = False) -> List[Union[Path, 
     return [ref for ref in refs if include_urls or isinstance(ref, Path)]
 
 
-def deppattern(pattern: str, markdown: Path) -> Union[str, Path]:
+def deppattern(pattern: str, markdown: Path) -> str | Path:
     if "%" in pattern:
         return pattern.replace("%", markdown.stem)
     else:

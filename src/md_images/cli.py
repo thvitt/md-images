@@ -1,4 +1,4 @@
-import builtins
+from __future__ import annotations
 import logging
 from os import fspath
 from pathlib import Path
@@ -27,11 +27,8 @@ from .model import MdFile, SourceSelection
 console = Console()
 
 
-def print(*args, **kwargs):
-    if console.is_terminal:
-        console.print(*args, **kwargs)
-    else:
-        builtins.print(*args, **kwargs)
+def print(*args, **kwargs):  # noqa: A001
+    console.print(*args, **kwargs)
 
 
 logger = logging.getLogger(__name__)
@@ -129,10 +126,7 @@ def cp(
     target_dir.mkdir(parents=True, exist_ok=True)
     for text in texts:
         source = MdFile(text)
-        if target_dir == target:
-            dest = target_dir / text.name
-        else:
-            dest = target
+        dest = target_dir / text.name if target_dir == target else target
         source.copy(dest, select)
 
 
@@ -197,8 +191,8 @@ def check(
 def links(
     texts: Texts,
     /,
-    format: Annotated[
-        Literal["tabbed", "url"] | str, Parameter(["-f", "--format"])
+    format: Annotated[  # noqa: A002
+        Literal["tabbed", "url"] | str, Parameter(["-f", "--format"])  # noqa: PYI051
     ] = "tabbed",
 ):
     """

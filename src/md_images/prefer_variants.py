@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from collections.abc import Iterable
 from pathlib import Path
 from posix import fspath
 from shlex import join, quote
-from typing import Callable, Literal
+from typing import Callable, ClassVar, Literal
 
 import cyclopts
 
@@ -11,10 +13,17 @@ app = cyclopts.App()
 
 
 class SuffixRanks:
-    default_preferences = ".ipynb .md .uml .dot .svg .tex".split()
+    default_preferences: ClassVar[tuple[str, ...]] = (
+        ".ipynb",
+        ".md",
+        ".uml",
+        ".dot",
+        ".svg",
+        ".tex",
+    )
 
     def __init__(self, preferences: list[str] | None = None):
-        self.preferences = preferences or self.default_preferences
+        self.preferences = preferences or list(self.default_preferences)
         self.ranks = {
             suffix: rank for rank, suffix in enumerate(self.preferences, start=1)
         }

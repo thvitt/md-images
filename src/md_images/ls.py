@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Sequence
 from datetime import datetime
@@ -19,7 +20,9 @@ import panflute as pf
 from cyclopts import App
 
 import logging
-from . import cli  # noqa: F401 # initializes logging  # pyright: ignore[reportUnusedImport]
+from . import (
+    cli,  # initializes logging  # pyright: ignore[reportUnusedImport]
+)
 
 logger = logging.getLogger(__name__)
 
@@ -117,10 +120,7 @@ class Ls:
         result = []
         for file in track(files, "Loading files...", transient=True):
             try:
-                if isinstance(file, MdFile):
-                    md_file = file
-                else:
-                    md_file = MdFile(file)
+                md_file = file if isinstance(file, MdFile) else MdFile(file)
                 result.append(md_file)
             except Exception as e:
                 logger.error(f"Error loading {file}: {e}")
@@ -164,7 +164,9 @@ class Ls:
 
 @app.default()
 def ls(
-    files: list[str] = ["*.md"], *, format: Literal["tsv", "pretty"] | str = "pretty"
+    files: list[str] = ["*.md"],
+    *,
+    format: Literal["tsv", "pretty"] | str = "pretty",  # noqa: A002, PYI051
 ):
     if not files:
         files = ["*.md"]
