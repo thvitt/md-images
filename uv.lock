@@ -396,7 +396,7 @@ wheels = [
 
 [[package]]
 name = "md-images"
-version = "0.8.0"
+version = "0.8.1"
 source = { editable = "." }
 dependencies = [
     { name = "cyclopts" },
@@ -422,8 +422,8 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "coverage", specifier = ">=7.10.7" },
-    { name = "pytest", specifier = ">=8.4.2" },
+    { name = "coverage", specifier = ">=7.6.9" },
+    { name = "pytest", specifier = ">=8.3.3" },
 ]
 
 [[package]]

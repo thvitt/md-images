@@ -1,6 +1,6 @@
 [project]
 name = "md-images"
-version = "0.8.0"
+version = "0.8.1"
 description = "Manage images linked in a markdown file"
 authors = [{ name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de" }]
 readme = "README.md"

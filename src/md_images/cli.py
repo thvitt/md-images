@@ -234,12 +234,12 @@ def links(
     if format == "tabbed" or format == "url":
         print("\n".join(result))
     else:
-        print(
-            Syntax(
-                convert_text(result, input_format="panflute", output_format=format),
-                format,
-            )
-        )
+        result = convert_text(result, input_format="panflute", output_format=format)
+        assert isinstance(result, str)
+        if console.is_terminal:
+            print(Syntax(result, format))
+        else:
+            print(result)
 
 
 @app.default
