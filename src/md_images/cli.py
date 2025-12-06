@@ -1,12 +1,13 @@
 import builtins
+import logging
 from os import fspath
 from pathlib import Path
 from typing import Annotated, Literal
+
+from cyclopts import App, Parameter
 from panflute import (
     BulletList,
-    Doc,
     Header,
-    Inline,
     Link,
     ListItem,
     Plain,
@@ -15,17 +16,13 @@ from panflute import (
     stringify,
 )
 from rich.console import Console
-from rich.syntax import Syntax
 from rich.logging import RichHandler
-
-from cyclopts import App, Parameter
+from rich.syntax import Syntax
 
 from md_images.core import relative_fspath
 
-from .model import MdFile, SourceSelection
 from .core import find_all
-
-import logging
+from .model import MdFile, SourceSelection
 
 console = Console()
 

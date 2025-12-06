@@ -1,16 +1,16 @@
-from collections.abc import Iterable
-from posix import fspath
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Callable, Literal
-import cyclopts
+from posix import fspath
 from shlex import join, quote
+from typing import Callable, Literal
+
+import cyclopts
 
 app = cyclopts.App()
 
 
 class SuffixRanks:
-
     default_preferences = ".ipynb .md .uml .dot .svg .tex".split()
 
     def __init__(self, preferences: list[str] | None = None):

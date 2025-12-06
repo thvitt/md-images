@@ -1,8 +1,7 @@
-import shlex
 from os import fspath
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Iterable, List, Type, TypeVar, Union
+from typing import Iterable, List, Sequence, Type, TypeVar, Union, cast
 from urllib.parse import urlparse
 
 import panflute as pf
@@ -15,8 +14,13 @@ def load_markdown(markdown: Path, input_format: str | None = None) -> pf.Doc:
         input_format = "markdown"
     if input_format == "ipynb":
         return _load_notebook(markdown)
-    return pf.convert_text(
-        markdown.read_text(encoding="utf-8"), input_format=input_format, standalone=True
+    return cast(
+        pf.Doc,
+        pf.convert_text(  # pf.Doc is guaranteed by standalone=True
+            markdown.read_text(encoding="utf-8"),
+            input_format=input_format,
+            standalone=True,
+        ),
     )
 
 
@@ -40,10 +44,10 @@ def _load_notebook(notebook: Path) -> pf.Doc:
         return load_markdown(Path(tmp, notebook.name).with_suffix(".html"), "html")
 
 
-T = TypeVar("T", pf.Element, pf.Image)
+T = TypeVar("T", bound=pf.Element)
 
 
-def find_all(doc: pf.Doc, cls: Type[T]) -> List[T]:
+def find_all(doc: pf.Doc, cls: Type[T]) -> list[T]:
     result = []
 
     def collect(elem: pf.Element, _):
@@ -62,7 +66,7 @@ def _is_generated_image(img: pf.Image) -> bool:
         return False
 
 
-def find_images(doc: pf.Doc, filter_outputs=True) -> List[pf.Image]:
+def find_images(doc: pf.Doc, filter_outputs=True) -> Sequence[pf.Image]:
     result = find_all(doc, pf.Image)
     if filter_outputs:
         result = [img for img in result if not _is_generated_image(img)]
@@ -124,8 +128,11 @@ def list_urls(doc: pf.Doc, output_format="markdown") -> str:
         items = [pf.ListItem(pf.Plain(link)) for link in links]
         bullet_list = pf.BulletList()
         bullet_list.content.extend(items)
-        return pf.convert_text(
-            bullet_list, input_format="panflute", output_format=output_format
+        return cast(
+            str,
+            pf.convert_text(
+                bullet_list, input_format="panflute", output_format=output_format
+            ),
         )
 
 

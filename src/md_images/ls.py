@@ -19,7 +19,7 @@ import panflute as pf
 from cyclopts import App
 
 import logging
-from . import cli  # noqa : initializes logging
+from . import cli  # noqa: F401 # initializes logging  # pyright: ignore[reportUnusedImport]
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,6 @@ DEFAULT_COLUMNS = [
 
 
 class Ls:
-
     def __init__(
         self,
         what: Sequence[Path | MdFile | str] | str | None = None,

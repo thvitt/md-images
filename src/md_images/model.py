@@ -1,15 +1,14 @@
+import logging
 from enum import Enum
 from functools import cached_property
 from pathlib import Path
+from shutil import copy2
+from typing import Callable
 
-from panflute import stringify
 import panflute as pf
 
 from .core import find_images, load_markdown, relative_fspath, resolve_url
 from .prefer_variants import rank_variants
-from typing import Callable
-from shutil import copy2
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,6 @@ class SourceSelection(Enum):
 
 
 class MdFile:
-
     path: Path
     doc: pf.Doc
 
