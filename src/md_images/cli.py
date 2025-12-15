@@ -1,13 +1,12 @@
 from __future__ import annotations
+
 import builtins
-from operator import attrgetter
-from typing import Callable, TypeVar
-from ast import Call
-from typing import Hashable
 import logging
+from collections.abc import Hashable, Iterable
+from operator import attrgetter
 from os import fspath
 from pathlib import Path
-from typing import Annotated, Iterable, Literal
+from typing import Annotated, Callable, Literal, TypeVar
 
 from cyclopts import App, Parameter
 from panflute import (
