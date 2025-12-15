@@ -1,4 +1,5 @@
 from __future__ import annotations
+import builtins
 from operator import attrgetter
 from typing import Callable, TypeVar
 from ast import Call
@@ -32,7 +33,10 @@ console = Console()
 
 
 def print(*args, **kwargs):  # noqa: A001
-    console.print(*args, **kwargs)
+    if console.is_terminal:
+        console.print(*args, **kwargs)
+    else:
+        builtins.print(*args, **kwargs)
 
 
 logger = logging.getLogger(__name__)
