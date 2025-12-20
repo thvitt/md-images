@@ -6,7 +6,8 @@ from collections.abc import Hashable, Iterable
 from operator import attrgetter
 from os import fspath
 from pathlib import Path
-from typing import Annotated, Callable, Literal, TypeVar
+from typing import Annotated, Literal, TypeVar
+from collections.abc import Callable
 
 from cyclopts import App, Parameter
 from panflute import (
@@ -43,7 +44,8 @@ logging.basicConfig(
     format="%(message)s", handlers=[RichHandler(show_time=False)], level=logging.INFO
 )
 
-app = App(default_parameter=Parameter(negative=[]), help_format="rst")
+app = App(default_parameter=Parameter(negative=[]))
+app.register_install_completion_command(add_to_startup=False)
 
 
 Texts = Annotated[

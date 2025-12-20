@@ -1,13 +1,13 @@
 [project]
 name = "md-images"
-version = "0.8.3"
+version = "0.8.4"
 description = "Manage images linked in a markdown file"
 authors = [{ name = "Thorsten Vitt", email = "thorsten.vitt@uni-wuerzburg.de" }]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = [
     "panflute>=2.0.5,<3.0.0",
-    "cyclopts>=3.0.0,<4.0.0",
+    "cyclopts>=4.0.0",
     "humanize>=4.11.0",
 ]
 classifiers = [
