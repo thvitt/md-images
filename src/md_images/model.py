@@ -4,7 +4,7 @@ from enum import Enum
 from functools import cached_property
 from pathlib import Path
 from shutil import copy2
-from typing import Callable
+from collections.abc import Callable
 
 import panflute as pf
 
@@ -110,6 +110,11 @@ class MdFile:
         )
         for img in images:
             dest = target_dir / img.relative_to(self.path.parent)
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            copy2(img, dest)
-            logger.debug("   %s: copied image file %s to %s", self.path, img, dest)
+            try:
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                copy2(img, dest)
+                logger.debug("   %s: copied image file %s to %s", self.path, img, dest)
+            except OSError as e:
+                logger.error(
+                    "   %s: copying %s to %s failed: %s", self.path, img, dest, e
+                )

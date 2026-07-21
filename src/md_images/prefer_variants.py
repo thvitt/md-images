@@ -5,7 +5,8 @@ from collections.abc import Iterable
 from pathlib import Path
 from posix import fspath
 from shlex import join, quote
-from typing import Callable, ClassVar, Literal
+from typing import ClassVar, Literal
+from collections.abc import Callable
 
 import cyclopts
 
